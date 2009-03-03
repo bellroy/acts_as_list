@@ -102,21 +102,23 @@ module ActiveRecord
         # Move to the bottom of the list. If the item is already in the list, the items below it have their
         # position adjusted accordingly.
         def move_to_bottom
-          return unless in_list?
+          raise "Item is not in list" unless in_list?
           acts_as_list_class.transaction do
             decrement_positions_on_lower_items
             assume_bottom_position
           end
+          self
         end
 
         # Move to the top of the list. If the item is already in the list, the items above it have their
         # position adjusted accordingly.
         def move_to_top
-          return unless in_list?
+          raise "Item is not in list" unless in_list?
           acts_as_list_class.transaction do
             increment_positions_on_higher_items
             assume_top_position
           end
+          self
         end
 
         # Removes the item from the list.
@@ -125,6 +127,7 @@ module ActiveRecord
             decrement_positions_on_lower_items
             update_attribute position_column, nil
           end
+          self
         end
 
         # Increase the position of this item without adjusting the rest of the list.
