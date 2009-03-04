@@ -78,6 +78,11 @@ module ActiveRecord
         def insert_at(position = 1)
           insert_at_position(position)
         end
+        
+        # Inserts the item at the bottom of the list
+        def insert_at_bottom
+          assume_bottom_position
+        end
 
         # Swap positions with the next lower item, if one exists.
         def move_lower
