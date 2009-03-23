@@ -174,6 +174,20 @@ module ActiveRecord
             "#{scope_condition} AND #{position_column} = #{(send(position_column).to_i + 1).to_s}"
           )
         end
+        
+        def higher_items
+          return nil unless in_list?
+          acts_as_list_class.find(:all, :conditions =>
+            "#{scope_condition} AND #{position_column} < #{send(position_column).to_s}"
+          )
+        end
+        
+        def lower_items
+          return nil unless in_list?
+          acts_as_list_class.find(:all, :conditions =>
+            "#{scope_condition} AND #{position_column} > #{send(position_column).to_s}"
+          )
+        end
 
         # Test if this record is in a list
         def in_list?
