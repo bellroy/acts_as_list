@@ -88,7 +88,7 @@ module ActiveRecord
         # Additionally, all attributes given in the options hash are set to the provided values
         def insert_into(list, options = {})
           self[position_column] = list.size + 1
-          options.each { |attr, value| self[attr] = value }
+          options.each { |attr, value| self.send "#{attr}=", value }
           list << self
         end
 
