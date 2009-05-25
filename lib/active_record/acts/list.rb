@@ -87,7 +87,7 @@ module ActiveRecord
         # Inserts the object into the given list at the bottom
         # Additionally, all attributes given in the options hash are set to the provided values
         def insert_into(list, options = {})
-          self[position_column] = list.size + 1
+          self.send "#{position_column}=", list.size + 1
           options.each { |attr, value| self.send "#{attr}=", value }
           list << self
         end
@@ -147,8 +147,8 @@ module ActiveRecord
           if in_list?
             decrement_positions_on_lower_items
             
-            self[position_column] = nil
-            options.each { |attr, value| self[attr] = value }
+            self.send "#{position_column}=", nil
+            options.each { |attr, value| self.send "#{attr}=", value }
             list.delete self
           end
         end
