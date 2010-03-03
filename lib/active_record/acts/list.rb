@@ -87,9 +87,9 @@ module ActiveRecord
         # Inserts the object into the given list at the bottom
         # Additionally, all attributes given in the options hash are set to the provided values
         def insert_into(list, options = {})
-          self.send "#{position_column}=", list.size + 1
+          position = options.delete(:position) || list.size + 1
           options.each { |attr, value| self.send "#{attr}=", value }
-          list << self
+          insert_at_position(position)
         end
 
         # Swap positions with the next lower item, if one exists.
