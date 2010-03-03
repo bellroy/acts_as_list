@@ -26,8 +26,8 @@ module ActiveRecord
         # Configuration options are:
         #
         # * +column+ - specifies the column name to use for keeping the position integer (default: +position+)
-        # * +scope+ - restricts what is to be considered a list. Given a symbol, it'll attach <tt>_id</tt> 
-        #   (if it hasn't already been added) and use that as the foreign key restriction. It's also possible 
+        # * +scope+ - restricts what is to be considered a list. Given a symbol, it'll attach <tt>_id</tt>
+        #   (if it hasn't already been added) and use that as the foreign key restriction. It's also possible
         #   to give it an entire string that is interpolated if you need a tighter scope than just a foreign key.
         #   Example: <tt>acts_as_list :scope => 'todo_list_id = #{todo_list_id} AND completed = 0'</tt>
         def acts_as_list(options = {})
@@ -78,18 +78,20 @@ module ActiveRecord
         def insert_at(position = 1)
           insert_at_position(position)
         end
-        
+
         # Inserts the item at the bottom of the list
         def insert_at_bottom
           assume_bottom_position
         end
-        
+
         # Inserts the object into the given list at the bottom
         # Additionally, all attributes given in the options hash are set to the provided values
         def insert_into(list, options = {})
-          position = options.delete(:position) || list.size + 1
+          position = options.delete(:position) || list.size
           options.each { |attr, value| self.send "#{attr}=", value }
-          insert_at_position(position)
+
+          list.insert(position, self)
+          list.each_with_index { |item, index| item.update_attribute(:position, index + 1) }
         end
 
         # Swap positions with the next lower item, if one exists.
@@ -142,11 +144,11 @@ module ActiveRecord
           end
           self
         end
-        
+
         def remove_from(list, options = {})
           if in_list?
             decrement_positions_on_lower_items
-            
+
             self.send "#{position_column}=", nil
             options.each { |attr, value| self.send "#{attr}=", value }
             list.delete self
@@ -192,14 +194,14 @@ module ActiveRecord
             "#{scope_condition} AND #{position_column} = #{(send(position_column).to_i + 1).to_s}"
           )
         end
-        
+
         def higher_items
           return nil unless in_list?
           acts_as_list_class.find(:all, :conditions =>
             "#{scope_condition} AND #{position_column} < #{send(position_column).to_s}"
           )
         end
-        
+
         def lower_items
           return nil unless in_list?
           acts_as_list_class.find(:all, :conditions =>
@@ -290,7 +292,7 @@ module ActiveRecord
             increment_positions_on_lower_items(position)
             self.update_attribute(position_column, position)
           end
-      end 
+      end
     end
   end
 end

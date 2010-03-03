@@ -28,10 +28,11 @@ describe ActiveRecord::Acts::List do
 
   describe "insert into" do
     before do
-      @elem.stub!(:insert_at_position)
+      @elem.stub! :update_attribute
     end
+
     it "should insert the element at the bottom" do
-      @elem.should_receive(:insert_at_position).with(1)
+      @list.should_receive(:insert).with(0, @elem)
       @elem.insert_into @list
     end
 
@@ -42,8 +43,18 @@ describe ActiveRecord::Acts::List do
     end
 
     it "should insert into a specified position" do
-      @elem.should_receive(:insert_at_position).with(42)
-      @elem.insert_into @list, :position => 42
+      @list.should_receive(:insert).with(41, @elem)
+      @elem.insert_into @list, :position => 41
+    end
+
+    it "should update the position on all attributes in the list" do
+      @elem2 = ListTest.new
+      @list = [@elem2]
+
+      @elem.should_receive(:update_attribute).with(:position, 2)
+      @elem2.should_receive(:update_attribute).with(:position, 1)
+
+      @elem.insert_into @list, :position => 1
     end
   end
 
