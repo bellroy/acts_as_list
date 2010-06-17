@@ -64,7 +64,7 @@ module ActiveRecord
             #{scope_condition_method}
 
             before_destroy :remove_from_list
-            before_create  :add_to_list_bottom
+            before_create  :add_to_list_bottom_when_necessary
           EOV
         end
       end
@@ -219,8 +219,8 @@ module ActiveRecord
             increment_positions_on_all_items
           end
 
-          def add_to_list_bottom
-            self[position_column] = bottom_position_in_list.to_i + 1
+          def add_to_list_bottom_when_necessary
+            self[position_column] = bottom_position_in_list.to_i + 1 if send(position_column).nil?
           end
 
           # Overwrite this method to define the scope of the list changes
